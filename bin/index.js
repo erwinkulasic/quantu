@@ -1,89 +1,73 @@
 #! /usr/bin/env node
 
 const arg = require('arg');
-const fs = require('node:fs');
-const path = require('node:path');
-const chokidar = require('chokidar');
 const { exec } = require('child_process');
-const os = require('node:os');
-const { Transform } = require('node:stream');
+const chokidar = require('chokidar');
+const fs = require('node:fs');
+const color = require('ansi-colors');
+const path = require('node:path');
+const { type } = require('node:os');
 
-function getPackageScripts() {
-    const package = JSON.parse(
-        fs.readFileSync(
-            path.resolve('package.json')
-        )
-    )
-
-    return package?.scripts;
+function KillSubprocess(pid) {
+    exec(type() === 'Windows_NT' ? `taskkill /PID ${pid} /F /T` : `kill -9 ${pid}`);
 }
 
 function CreateSubprocess(command) {
     let proc = exec(command);
+
     proc.stdout.pipe(process.stdout)
-    proc.stderr
-        .pipe(new Transform({
-            transform(chunk, encoding, callback) {
-                callback(null, String(`\x1b[35mQUANTU \x1b[31mError \x1b[0m \r\n\n${chunk.toString()}`));
-            }
-        }))
-        .pipe(process.stderr);
+    proc.stderr.pipe(process.stderr);
 
     return proc;
 }
 
 function Supervision(script) {
-
-    const currentOS = os.type();
     let subprocess = CreateSubprocess(script);
-
-    const watcher = chokidar.watch('./', {
-        persistent: true
-    });
+    const watcher = chokidar.watch('./', { persistent: true });
 
     watcher.on('change', () => {
-        if (currentOS === 'Windows_NT') {
-            exec(`taskkill /PID ${subprocess.pid} /F /T`);
-        } else if (currentOS === 'Linux' || currentOS === 'Darwin') {
-            exec(`kill -9 ${subprocess.pid}`);
-        }
-
+        KillSubprocess(subprocess.pid)
         subprocess = CreateSubprocess(script);
 
-        console.log("\x1b[35m", "QUANTU", "\x1b[32m", "Refreshed", "\x1b[0m");
+        console.log(color.magenta('Quantu'), color.green('Refreshed'))
     })
 
-    watcher.on('ready', () => {
-        console.log("\x1b[35m", "QUANTU", "\x1b[32m", "Watching", "\x1b[0m");
-    })
+    watcher.on('ready', () => console.log(color.magenta('Quantu'), color.green('Watching')))
 }
 
-function quantu() {
+
+function Quantu() {
     try {
         const args = arg(
             {
                 '--help': Boolean,
+                '--version': Boolean,
                 '--run': String
             },
             (options = { permissive: false, argv: process.argv.slice(2) })
         );
 
-        if (args['--help']) {
-            console.log("\x1b[35m", "QUANTU", "\x1b[32m", "CLI", "\x1b[0m", "\n");
-            console.log("\t\x1b[34mdefault npm stage is < start >\n");
-            console.log('\t--run = < stage >\n \x1b[0m')
+        if (args['--version']) {
+            console.log(color.magenta('Quantu'), color.gray(`version: ${require('../package.json').version}`))
             return;
         }
 
-        const scripts = getPackageScripts();
+        if (args['--help']) {
+            console.log(color.magenta('Quantu'), color.green('Help'), '\n', color.gray(`--run = <script name>`), '\n', color.gray(`--version`))
+            return;
+        }
 
-        if (scripts === undefined && Object.keys(scripts).length === 0) {
+        const scripts = require(path.resolve('package.json'))?.scripts;
+
+        if (scripts === undefined || Object.keys(scripts).length === 0) {
             throw new Error("No scripts were defined in package.json");
         }
 
         if (args['--run']) {
             if (scripts[args['--run']] === undefined) {
-                throw new Error("The specified script doesn't exists in the package.json");
+                throw new Error(`The specified script doesn't exists in the package.json.\n Avaiable scripts:\n${
+                    Object.keys(scripts).map((name, index) => ` ${index}: ${name} \n`).join('')
+                }`);
             }
 
             Supervision(`npm run ${args['--run']}`);
@@ -91,8 +75,8 @@ function quantu() {
             Supervision(`npm start`);
         }
     } catch (error) {
-        console.log("\x1b[35m", "QUANTU", "\x1b[31m", error.message, "\x1b[0m");
+        console.log(color.magenta('Quantu'), color.red(error.message));
     }
 }
 
-quantu();
+Quantu();
