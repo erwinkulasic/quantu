@@ -1,6 +1,6 @@
 {
   "name": "quantu",
-  "version": "1.0.0",
+  "version": "1.0.0-dev",
   "description": "Auto restarting node applications using package scripts",
   "main": "./bin/index.js",
   "bin": {
