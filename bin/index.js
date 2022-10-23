@@ -24,7 +24,7 @@ function CreateSubprocess(command) {
     proc.stderr
         .pipe(new Transform({
             transform(chunk, encoding, callback) {
-                callback(null, String(`\x1b[35mREACTIV \x1b[31mError \x1b[0m \r\n\n${chunk.toString()}`));
+                callback(null, String(`\x1b[35mQUANTU \x1b[31mError \x1b[0m \r\n\n${chunk.toString()}`));
             }
         }))
         .pipe(process.stderr);
@@ -69,7 +69,7 @@ function quantu() {
         );
 
         if (args['--help']) {
-            console.log("\x1b[35m", "REACTIVE", "\x1b[32m", "CLI", "\x1b[0m", "\n");
+            console.log("\x1b[35m", "QUANTU", "\x1b[32m", "CLI", "\x1b[0m", "\n");
             console.log("\t\x1b[34mdefault npm stage is < start >\n");
             console.log('\t--run = < stage >\n \x1b[0m')
             return;
@@ -91,7 +91,7 @@ function quantu() {
             Supervision(`npm start`);
         }
     } catch (error) {
-        console.log("\x1b[35m", "REACTIVE", "\x1b[31m", error.message, "\x1b[0m");
+        console.log("\x1b[35m", "QUANTU", "\x1b[31m", error.message, "\x1b[0m");
     }
 }
 
