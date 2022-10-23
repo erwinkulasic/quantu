@@ -1,0 +1,38 @@
+{
+  "name": "quantu",
+  "version": "1.0.0",
+  "description": "Auto restarting node applications using package scripts",
+  "main": "./bin/index.js",
+  "bin": {
+    "quantu": "bin/index.js"
+  },
+  "dependencies": {
+    "anymatch": "^3.1.2",
+    "braces": "^3.0.2",
+    "chokidar": "^3.5.3",
+    "arg": "^5.0.2",
+    "glob-parent": "^5.1.2",
+    "fill-range": "^7.0.1",
+    "binary-extensions": "^2.2.0",
+    "is-binary-path": "^2.1.0",
+    "is-extglob": "^2.1.1",
+    "is-glob": "^4.0.3",
+    "is-number": "^7.0.0",
+    "picomatch": "^2.3.1",
+    "normalize-path": "^3.0.0",
+    "readdirp": "^3.6.0",
+    "to-regex-range": "^5.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "erwinkulasic",
+  "license": "MIT",
+  "keywords": [
+    "cli",
+    "javascript",
+    "auto",
+    "restarting",
+    "watcher",
+    "monitoring"
+  ]
+}
