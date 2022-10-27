@@ -65,8 +65,8 @@ function Quantu() {
 
         if (args['--run']) {
             if (scripts[args['--run']] === undefined) {
-                throw new Error(`The specified script doesn't exists in the package.json.\n Avaiable scripts:\n${
-                    Object.keys(scripts).map((name, index) => ` ${index}: ${name} \n`).join('')
+                throw new Error(`The specified script doesn't exists in the package.json.\nAvaiable scripts:\n${
+                    Object.keys(scripts).map((name, index) => `${index}: ${name} \n`).join('')
                 }`);
             }
 
